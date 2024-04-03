@@ -54,7 +54,7 @@ disp.image(image,rotation)
 padding = -2
 top = padding
 bottom = height-padding
-text_y_offset = 5
+text_y_offset = 6
 x = 0
 
 # Load DejaVu TTF Font
@@ -94,10 +94,10 @@ def get_wifi_info(interface='wlan0'):
 def signal_to_bars(signal):
     bars = ['\u2581', '\u2583', '\u2585', '\u2587']
     ranges = [
-        (-100, -80),  # 1 bar
-        (-79, -60),   # 2 bars
-        (-59, -50),   # 3 bars
-        (-49, -30)  # 4 bars
+        (-100, -80), # 1 bar
+        (-79, -67),  # 2 bars
+        (-66, -56),  # 3 bars
+        (-55, -30)   # 4 bars
     ]
     signal = int(signal) # cast to integer
     series = ""
@@ -121,21 +121,21 @@ while True:
 
     # Output wireless stats
     y = top
-    draw.text((x, y), essid, font=font, fill="#FFFFFF")
+    draw.text((x, y), essid, font=font, fill="#711DB0")
     text_bbox = draw.textbbox((x, y), essid, font=font)
     text_height = text_bbox[3] - text_bbox[1]
     y += text_height + text_y_offset
     
-    draw.text((x, y), "Freq: " + freq + " GHz", font=font, fill="#FFFF00")
+    draw.text((x, y), "Freq: " + freq + " GHz", font=font, fill="#C21292")
     y += text_height + text_y_offset
    
-    draw.text((x, y), "Quality: " + quality, font=font, fill="#00FF00")
+    draw.text((x, y), "Quality: " + quality, font=font, fill="#EF4040")
     y += text_height + text_y_offset
    
-    draw.text((x, y), "Signal: " + signal + " dBm", font=font, fill="#FF00FF")
-    y += text_height + text_y_offset
+    draw.text((x, y), "Signal: " + signal + " dBm", font=font, fill="#FFA732")
+    y += text_height + text_y_offset + 5
 
-    draw.text((x, y), "Bars: " + bars, font=font, fill="#FF00FF")
+    draw.text((x, y), "     " + bars, font=font, fill="#F3EDC8")
 
     # Display image
     disp.image(image, rotation)
