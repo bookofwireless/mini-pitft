@@ -91,6 +91,23 @@ def get_wifi_info(interface='wlan0'):
         print("Error getting wireless info:", e)
         return None, None, None, None
 
+def signal_to_bars(signal):
+    bars = ['\u2581', '\u2583', '\u2585', '\u2587']
+    ranges = [
+        (-100, -80),  # 1 bar
+        (-79, -60),   # 2 bars
+        (-59, -50),   # 3 bars
+        (-49, -30)  # 4 bars
+    ]
+    signal = int(signal) # cast to integer
+    series = ""
+    for i, (lower, upper) in enumerate(ranges):
+        if signal >= lower:
+            series += bars[i]
+        else:
+            break
+    return series
+
 def toggle_backlight():
     backlight.value = not backlight.value
 
@@ -100,6 +117,7 @@ while True:
 
     # Get wireless interface stats 
     essid, freq, quality, signal = get_wifi_info()
+    bars = signal_to_bars(signal)
 
     # Output wireless stats
     y = top
@@ -115,6 +133,9 @@ while True:
     y += text_height + text_y_offset
    
     draw.text((x, y), "Signal: " + signal + " dBm", font=font, fill="#FF00FF")
+    y += text_height + text_y_offset
+
+    draw.text((x, y), "Bars: " + bars, font=font, fill="#FF00FF")
 
     # Display image
     disp.image(image, rotation)
