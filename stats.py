@@ -55,11 +55,9 @@ padding = -2
 top = padding
 bottom = height-padding
 text_y_offset = 5
-# Move left to right keeping track of the current x position
 x = 0
 
 # Load DejaVu TTF Font
-# Install with: sudo apt-get install ttf-dejavu
 font_path = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 font_size = 24
 font = ImageFont.truetype(font_path, font_size, encoding="unic")
@@ -69,6 +67,10 @@ backlight = digitalio.DigitalInOut(board.D22)
 backlight.switch_to_output()
 backlight.value = True
 
+# Define button
+buttonA = digitalio.DigitalInOut(board.D23)
+buttonA.switch_to_input()
+
 def execute_command(command):
     try:
         output = subprocess.check_output(command, shell=True, universal_newlines=True)
@@ -76,46 +78,49 @@ def execute_command(command):
     except subprocess.CalledProcessError as e:
         print("Error:", e.output)
 
-cmd = "nmcli device wifi"
+def get_wifi_info(interface='wlan0'):
+    cmd = f"iwconfig {interface}"
+    try:
+        output = execute_command(cmd)
+        essid = output.split('ESSID:"')[1].split('"')[0]
+        freq = output.split('Frequency:')[1].split(' ')[0]
+        quality = output.split('Link Quality=')[1].split(' ')[0]
+        signal = output.split('Signal level=')[1].split(' ')[0]
+        return essid, freq, quality, signal
+    except Exception as e:
+        print("Error getting wireless info:", e)
+        return None, None, None, None
+
+def toggle_backlight():
+    backlight.value = not backlight.value
 
 while True:
     # Draw a black filled box to clear the image
     draw.rectangle((0, 0, width, height), outline=0, fill=0)
 
-    output = execute_command(cmd)
+    # Get wireless interface stats 
+    essid, freq, quality, signal = get_wifi_info()
 
-    wifi_info = []
-    lines = output.strip().split('\n')
-    headers = lines[0].split()
-    data = lines[1].split()
-
-    indices = [headers.index(header) for header in ['SSID', 'CHAN', 'SIGNAL', 'SECURITY' ]]
-    for line in lines[1:]:
-        parsed_line = line.split()
-        data = [parsed_line[i] for i in indices]
-        wifi_info.append(data)
-
-    SSID, CHAN, SIGNAL, SECURITY = wifi_info[0]
-
-    # Output wifi statistics
+    # Output wireless stats
     y = top
-    draw.text((x, y), SSID, font=font, fill="#FFFFFF")
-    text_bbox = draw.textbbox((x, y), SSID, font=font)
+    draw.text((x, y), essid, font=font, fill="#FFFFFF")
+    text_bbox = draw.textbbox((x, y), essid, font=font)
     text_height = text_bbox[3] - text_bbox[1]
     y += text_height + text_y_offset
     
-    draw.text((x, y), "Channel: " + CHAN, font=font, fill="#FFFF00")
+    draw.text((x, y), "Freq: " + freq + " GHz", font=font, fill="#FFFF00")
     y += text_height + text_y_offset
    
-    draw.text((x, y), "Signal: " + SIGNAL, font=font, fill="#00FF00")
-    y += text_height + text_y_offset + 10
-    
-    #draw.text((x, y), "Rate: " + RATE , font=font, fill="#0000FF")
-    #y += text_height + text_y_offset
-    
-    draw.text((x, y), "Bars: " + SECURITY, font=font, fill="#FF00FF")
+    draw.text((x, y), "Quality: " + quality, font=font, fill="#00FF00")
+    y += text_height + text_y_offset
+   
+    draw.text((x, y), "Signal: " + signal + " dBm", font=font, fill="#FF00FF")
 
     # Display image
     disp.image(image, rotation)
+
+    if not buttonA.value:
+        toggle_backlight()
+
     time.sleep(.1)
 
