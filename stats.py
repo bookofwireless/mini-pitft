@@ -54,11 +54,11 @@ disp.image(image,rotation)
 padding = -2
 top = padding
 bottom = height-padding
-text_y_offset = 6
+text_y_offset = 5
 x = 0
 
-# Load DejaVu TTF Font
-font_path = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
+# Load FiraCode TTF Font
+font_path = '/usr/share/fonts/truetype/firacode/FiraCode-Regular.ttf'
 font_size = 24
 font = ImageFont.truetype(font_path, font_size, encoding="unic")
 
