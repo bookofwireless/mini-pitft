@@ -71,9 +71,9 @@ backlight.value = True
 buttonA = digitalio.DigitalInOut(board.D23)
 buttonA.switch_to_input()
 
-def execute_command(command):
+def execute_command(cmd):
     try:
-        output = subprocess.check_output(command, shell=True, universal_newlines=True)
+        output = subprocess.check_output(cmd, shell=True, universal_newlines=True)
         return output
     except subprocess.CalledProcessError as e:
         print("Error:", e.output)
