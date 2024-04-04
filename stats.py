@@ -79,7 +79,7 @@ def execute_command(command):
         print("Error:", e.output)
 
 def get_wifi_info(interface='wlan0'):
-    cmd = f"iwconfig {interface}"
+    cmd = f"/usr/sbin/iwconfig {interface}"
     try:
         output = execute_command(cmd)
         essid = output.split('ESSID:"')[1].split('"')[0]
