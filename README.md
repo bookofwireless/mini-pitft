@@ -1,1 +1,1 @@
-# minitft
+# mini-pitft
